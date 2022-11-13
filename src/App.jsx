@@ -62,65 +62,57 @@ function App() {
   const [score, setScore] = React.useState(0);
   const [hand, setHand] = React.useState([0, 13, 26, 39]);
   const [dealtCards, updateDeck] = React.useState([]);
-  let numAces = 0;
+  let numAces;
 
   function addNewCard() {
-    let newCardValue;
+    let index;
     do {
-      newCardValue = Math.floor(Math.random() * cardData.length);
-    } while (dealtCards.includes(cardData[newCardValue]));
-    aceCheck(cardData[newCardValue].value);
+      index = Math.floor(Math.random() * cardData.length);
+    } while (dealtCards.includes(cardData[index]));
+    aceCheck(cardData[index].value);
+
+    let newScore = score + cardData[index].value;
+    if (newScore > 21 && numAces) {
+      console.log(numAces)
+      console.log("hiii")
+      newScore = newScore - 10;
+      numAces--;
+    }
 
     const handCopy = [...hand];
-    handCopy.push(newCardValue);
+    handCopy.push(index);
     setHand(handCopy);
 
     const dealtCopy = [...dealtCards];
-    dealtCopy.push(cardData[newCardValue]);
+    dealtCopy.push(cardData[index]);
     updateDeck(dealtCopy);
 
-    console.log(dealtCards);
-    if (numAces > 1 && score + cardData[newCardValue].value > 21)
+    // console.log(dealtCards);
 
-      setScore(score + cardData[newCardValue].value);
+    setScore(newScore);
   }
 
-  // function aceCheck(cardValue) {
 
-  //   console.log(score + cardValue);
-  //   if (cardValue === 1 && (score + cardValue) < 21)
-  //     return 11;
-  //   console.log("function " + cardValue);
-  //   return cardValue;
-  // }
 
   function aceCheck(cardValue) {
-    if (cardValue === 1)
+    if (cardValue === 11)
       numAces++;
   }
 
-  function clearHand() {
+  function startGame() {
     let card1;
     let card2;
+    numAces = 0;
     do {
       card1 = Math.floor(Math.random() * cardData.length);
       card2 = Math.floor(Math.random() * cardData.length);
     } while (card1 === card2);
-
-    // const card1 = 0;
-    // const card2 = 13;
+    aceCheck(cardData[card1].value);
+    aceCheck(cardData[card2].value);
 
     setHand([card1, card2]);
     updateDeck([cardData[card1], cardData[card2]]);
-    setScore(aceCheck(cardData[card1].value, cardData[card2].value));
-    // setHand([]);
-    // updateDeck([]);
-    // setScore(0);
-    // addNewCard();
-
-    // addNewCard();
-
-
+    setScore(cardData[card1].value + cardData[card2].value);
   }
 
 
@@ -131,9 +123,9 @@ function App() {
       <div className="hand">
         {hand.map((c) => <Card card={cardData[c]} />)}
       </div>
-      <button onClick={addNewCard} disabled={score >= 21}>New Card</button>
+      <button onClick={addNewCard} disabled={score >= 21 || score <= 0}>New Card</button>
       <p>Score: {score}</p>
-      <button onClick={clearHand} >Start Game</button>
+      <button onClick={startGame} >Start Game</button>
       {score === 21 && <h1>Blackjack!</h1>}
       {score > 21 && <h1>You lost</h1>}
     </div>
