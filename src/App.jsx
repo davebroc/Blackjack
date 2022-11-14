@@ -109,12 +109,15 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Card Game</h1>
+      <h1>Blackjack Game</h1>
 
       <div className="hand">
         {hand.map((c) => <Card card={cardData[c]} />)}
       </div>
-      <button onClick={addNewCard} disabled={score >= 21 || score <= 0}>New Card</button>
+      <div className="hand">
+        {hand.map((c) => <Card card={cardData[c]} />)}
+      </div>
+      <button onClick={addNewCard} disabled={score >= 21 || score <= 0}>Hit</button>
       <p>Score: {score}</p>
       <button onClick={startGame} >Start Game</button>
       {score === 21 && <h1>Blackjack!</h1>}
