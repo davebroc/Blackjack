@@ -67,7 +67,6 @@ function App() {
     let index;
     do {
       index = Math.floor(Math.random() * cardData.length);
-      // index = aceIndexes[Math.floor(Math.random() * aceIndexes.length)];
     } while (hand.includes(index));
 
     let newScore = score + cardData[index].value;
@@ -97,10 +96,14 @@ function App() {
       card1 = Math.floor(Math.random() * cardData.length);
       card2 = Math.floor(Math.random() * cardData.length);
     } while (card1 === card2);
-
+    if (cardData[card1].value + cardData[card2].value === 22) {//double aces case
+      setScore(12);
+      setScoreArray([11, 1]);
+    } else {
+      setScore(cardData[card1].value + cardData[card2].value);
+      setScoreArray([cardData[card1].value, cardData[card2].value]);
+    }
     setHand([card1, card2]);
-    setScore(cardData[card1].value + cardData[card2].value);
-    setScoreArray([cardData[card1].value, cardData[card2].value])
   }
 
 
