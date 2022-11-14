@@ -57,50 +57,37 @@ const cardData = [
   { value: 10, img: './cards/king_of_diamonds2.svg' },
 ];
 
-const aceIndexes = [0, 13, 26, 39];
-
 function App() {
   const [score, setScore] = React.useState(0);
+  const [scoreArray, setScoreArray] = React.useState([]);
   const [hand, setHand] = React.useState([0, 13, 26, 39]);
-  // const [dealtIndex, updateDeck] = React.useState([]);
   const [numAces, setAces] = React.useState(0);
 
   function addNewCard() {
     let index;
     do {
-      // index = Math.floor(Math.random() * cardData.length);
-      index = aceIndexes[Math.floor(Math.random() * aceIndexes.length)];
+      index = Math.floor(Math.random() * cardData.length);
+      // index = aceIndexes[Math.floor(Math.random() * aceIndexes.length)];
     } while (hand.includes(index));
-    aceCheck(cardData[index].value);
 
     let newScore = score + cardData[index].value;
-    if (newScore > 21 && numAces > 0) {
+    let firstEleven = scoreArray.indexOf(11);
+    while (newScore > 21 && (firstEleven !== -1 || cardData[index].value === 11)) {
+      setScoreArray(scoreArray.map((c, i) => {
+        if (i === firstEleven) {
+          return c = 1;
+        }
+        return c;
+      }));
       newScore = newScore - 10;
-      setAces(numAces - 1);
-      console.log("We went over. There are now " + numAces + " 11's")
     }
-
     const handCopy = [...hand];
     handCopy.push(index);
     setHand(handCopy);
 
-    // const dealtCopy = [...dealtIndex];
-    // dealtCopy.push(index);
-    // updateDeck(dealtCopy);
-
-    // console.log(dealtCards);
-
     setScore(newScore);
   }
 
-
-
-  function aceCheck(cardValue) {
-    if (cardValue === 11) {
-      setAces(numAces + 1);
-      console.log("I was an ace. There are " + numAces + " aces");
-    }
-  }
 
   function startGame() {
     let card1;
@@ -110,12 +97,10 @@ function App() {
       card1 = Math.floor(Math.random() * cardData.length);
       card2 = Math.floor(Math.random() * cardData.length);
     } while (card1 === card2);
-    aceCheck(cardData[card1].value);
-    aceCheck(cardData[card2].value);
 
     setHand([card1, card2]);
-    // updateDeck([cardData[card1], cardData[card2]]);
     setScore(cardData[card1].value + cardData[card2].value);
+    setScoreArray([cardData[card1].value, cardData[card2].value])
   }
 
 
