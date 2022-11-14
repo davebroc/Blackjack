@@ -55,24 +55,45 @@ const cardData = [
   { value: 10, img: './cards/jack_of_diamonds2.svg' },
   { value: 10, img: './cards/queen_of_diamonds2.svg' },
   { value: 10, img: './cards/king_of_diamonds2.svg' },
+  { value: 0, img: './cards/Card_back_05a.svg' },
 ];
 
 function App() {
-  const [score, setScore] = React.useState(0);
-  const [scoreArray, setScoreArray] = React.useState([]);
-  const [hand, setHand] = React.useState([0, 13, 26, 39]);
-  const [numAces, setAces] = React.useState(0);
+  const [pScore, setPScore] = React.useState(0);
+  const [pScoreArray, setPScoreArray] = React.useState([]);
+  const [dScore, setDScore] = React.useState(0);
+  const [dScoreArray, setDScoreArray] = React.useState([]);
+  const [playerHand, setPHand] = React.useState([0, 13, 26, 39]);
+  const [dealerHand, setDHand] = React.useState([52, 52]);
 
-  function addNewCard() {
+
+  function addNewCard(isPlayer) {
     let index;
     do {
-      index = Math.floor(Math.random() * cardData.length);
-    } while (hand.includes(index));
+      index = getRandIndex();
+    } while (playerHand.includes(index) || dealerHand.includes(index));
 
-    let newScore = score + cardData[index].value;
-    let firstEleven = scoreArray.indexOf(11);
-    while (newScore > 21 && (firstEleven !== -1 || cardData[index].value === 11)) {
-      setScoreArray(scoreArray.map((c, i) => {
+    let newScore = calculateScore(index, isPlayer);
+    return { index: index, score: newScore }
+  }
+  function calculateScore(idx, isPlayer) {
+    let array;
+    let setFunc;
+    let newScore;
+
+    if (isPlayer) {
+      array = pScoreArray;
+      setFunc = setPScoreArray;
+      newScore = pScore + cardData[idx].value;
+    } else {
+      array = dScoreArray;
+      setFunc = setDScoreArray;
+      newScore = dScore + cardData[idx].value;
+    }
+
+    let firstEleven = array.indexOf(11);
+    while (newScore > 21 && (firstEleven !== -1 || cardData[idx].value === 11)) {
+      setFunc(array.map((c, i) => {
         if (i === firstEleven) {
           return c = 1;
         }
@@ -80,48 +101,74 @@ function App() {
       }));
       newScore = newScore - 10;
     }
-    const handCopy = [...hand];
-    handCopy.push(index);
-    setHand(handCopy);
-
-    setScore(newScore);
+    return newScore;
   }
+
+  function hit() {
+    const cardAndScore = addNewCard(true);
+    const handCopy = [...playerHand];
+    handCopy.push(cardAndScore.index);
+    setPHand(handCopy);
+    setPScore(cardAndScore.score);
+  }
+
+  function stand() {
+    const cardAndScore = addNewCard(false);
+    const handCopy = [...dealerHand];
+    handCopy.push(cardAndScore.index);
+
+    setDHand(handCopy);
+    setDScore(cardAndScore.score);
+
+
+  }
+
 
 
   function startGame() {
-    let card1;
-    let card2;
-    setAces(0);
+    let idx1;
+    let idx2;
+    let idx3;
+
     do {
-      card1 = Math.floor(Math.random() * cardData.length);
-      card2 = Math.floor(Math.random() * cardData.length);
-    } while (card1 === card2);
-    if (cardData[card1].value + cardData[card2].value === 22) {//double aces case
-      setScore(12);
-      setScoreArray([11, 1]);
+      idx1 = getRandIndex();
+      idx2 = getRandIndex();
+      idx3 = getRandIndex();
+    } while (idx1 === idx2 || idx2 === idx3 || idx3 === idx1);
+    if (cardData[idx1].value + cardData[idx2].value === 22) {//double aces case
+      setPScore(12);
+      setPScoreArray([11, 1]);
     } else {
-      setScore(cardData[card1].value + cardData[card2].value);
-      setScoreArray([cardData[card1].value, cardData[card2].value]);
+      setPScore(cardData[idx1].value + cardData[idx2].value);
+      setPScoreArray([cardData[idx1].value, cardData[idx2].value]);
     }
-    setHand([card1, card2]);
+    setPHand([idx1, idx2]);
+    setDHand([idx3, 52]);
+    setDScore(cardData[idx3].value);
+    setDScoreArray([cardData[idx3].value]);
   }
 
+  function getRandIndex() {
+    return Math.floor(Math.random() * (cardData.length - 1));
+  }
 
   return (
     <div className="App">
       <h1>Blackjack Game</h1>
 
-      <div className="hand">
-        {hand.map((c) => <Card card={cardData[c]} />)}
+      <div className="hand" id="dealerHand">
+        {dealerHand.map((c) => <Card card={cardData[c]} />)}
       </div>
-      <div className="hand">
-        {hand.map((c) => <Card card={cardData[c]} />)}
+      <p>House Score: {dScore}</p>
+      <div className="hand" id="playerHand">
+        {playerHand.map((c) => <Card card={cardData[c]} />)}
       </div>
-      <button onClick={addNewCard} disabled={score >= 21 || score <= 0}>Hit</button>
-      <p>Score: {score}</p>
+      <button onClick={hit} disabled={pScore >= 21 || pScore <= 0}>Hit</button>
+      <button onClick={stand} disabled={pScore >= 21 || pScore <= 0}>Stand</button>
+      <p>Your Score: {pScore}</p>
       <button onClick={startGame} >Start Game</button>
-      {score === 21 && <h1>Blackjack!</h1>}
-      {score > 21 && <h1>You lost</h1>}
+      {pScore === 21 && <h1>Blackjack!</h1>}
+      {pScore > 21 && <h1>You lost</h1>}
     </div>
   );
 }
