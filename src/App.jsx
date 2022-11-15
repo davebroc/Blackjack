@@ -108,23 +108,23 @@ function App() {
     setDScore(calculateScore("dealer"));
   }, [dealerHand]);
 
-  // React.useEffect(() => {
-
-  // }, [dScore]);
+  React.useEffect(() => {
+    console.log(dScore)
+  }, [dScore]);
 
 
   function calculateScore(person) {
     let array;
     let setFunc;
-    let score;
 
-    if (person.localeCompare("player")) {
+    if (person === "player") {
       array = pScoreArray;
       setFunc = setPScoreArray;
     } else {
       array = dScoreArray;
       setFunc = setDScoreArray;
     }
+    let score = array.reduce((pv, cv) => pv + cv, 0);
 
     while (score > 21 && array.indexOf(11) !== -1) {
       setFunc(array.map((c, i) => {
