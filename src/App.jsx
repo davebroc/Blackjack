@@ -65,7 +65,38 @@ function App() {
   const [dScoreArray, setDScoreArray] = React.useState([]);
   const [playerHand, setPHand] = React.useState([0, 13, 26, 39]);
   const [dealerHand, setDHand] = React.useState([52, 52]);
+  const [isStanded, setIsStanded] = React.useState(false);
+  // const [playerWin, setPWin] = React.useState(false);
+  // const [dealerWin, setDWin] = React.useState(false);
+  // const [playerBJ, setPBJ] = React.useState(false);
+  // const [dealerBJ, setDBJ] = React.useState(false);
+  // const [isBustP, setBustP] = React.useState(false);
+  // const [isBustD, setBustD] = React.useState(false);
 
+  React.useEffect(() => {
+    if (isStanded && dScore < 18)
+      stand();
+    // if (dScore > 21) {
+    //   // setIsDealerBusted(true)
+    //   // setWinner("player")
+    //   // setIsHandComplete(true)
+    // } if (dScore >= 17 && dScore < 22 && isDealersTurn) {
+    //   if (dScore > playerCount) {
+    //     // setWinner("dealer")
+    //     // setIsHandComplete(true)
+    //   } if (dScore < pScore && !isPlayerBusted) {
+    //     // setWinner("player")
+    //     // setIsHandComplete(true)
+    //   } if (dScore === pScore && !isPlayerBusted) {
+    //     // setWinner("push")
+    //     // setIsHandComplete(true)
+    //   }
+    // } if (dScore < 17 && isDealersTurn && !isPlayerBusted) {
+    //   // setTimeout(() => {
+    //   //   dealerHitAgain()
+    //   // }, 500);
+    // }
+  }, [dScore, isStanded]);
 
   function addNewCard(isPlayer) {
     let index;
@@ -116,20 +147,21 @@ function App() {
     const cardAndScore = addNewCard(false);
     const handCopy = [...dealerHand];
     handCopy.push(cardAndScore.index);
-
+    if (handCopy.includes(52))
+      handCopy.splice(handCopy.indexOf(52), 1);
     setDHand(handCopy);
     setDScore(cardAndScore.score);
+    setIsStanded(true);
 
 
+    return cardAndScore.score;
   }
-
-
 
   function startGame() {
     let idx1;
     let idx2;
     let idx3;
-
+    setIsStanded(false);
     do {
       idx1 = getRandIndex();
       idx2 = getRandIndex();
@@ -163,8 +195,8 @@ function App() {
       <div className="hand" id="playerHand">
         {playerHand.map((c) => <Card card={cardData[c]} />)}
       </div>
-      <button onClick={hit} disabled={pScore >= 21 || pScore <= 0}>Hit</button>
-      <button onClick={stand} disabled={pScore >= 21 || pScore <= 0}>Stand</button>
+      <button onClick={hit} disabled={pScore >= 21 || pScore <= 0 || dScore >= 21}>Hit</button>
+      <button onClick={stand} disabled={pScore >= 21 || pScore <= 0 || dScore >= 21}>Stand</button>
       <p>Your Score: {pScore}</p>
       <button onClick={startGame} >Start Game</button>
       {pScore === 21 && <h1>Blackjack!</h1>}
