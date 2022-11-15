@@ -73,30 +73,30 @@ function App() {
   // const [isBustP, setBustP] = React.useState(false);
   // const [isBustD, setBustD] = React.useState(false);
 
-  React.useEffect(() => {
-    if (isStanded && dScore < 18)
-      stand();
-    // if (dScore > 21) {
-    //   // setIsDealerBusted(true)
-    //   // setWinner("player")
-    //   // setIsHandComplete(true)
-    // } if (dScore >= 17 && dScore < 22 && isDealersTurn) {
-    //   if (dScore > playerCount) {
-    //     // setWinner("dealer")
-    //     // setIsHandComplete(true)
-    //   } if (dScore < pScore && !isPlayerBusted) {
-    //     // setWinner("player")
-    //     // setIsHandComplete(true)
-    //   } if (dScore === pScore && !isPlayerBusted) {
-    //     // setWinner("push")
-    //     // setIsHandComplete(true)
-    //   }
-    // } if (dScore < 17 && isDealersTurn && !isPlayerBusted) {
-    //   // setTimeout(() => {
-    //   //   dealerHitAgain()
-    //   // }, 500);
-    // }
-  }, [dScore, isStanded]);
+  // React.useEffect(() => {
+  //   if (isStanded && dScore < 18)
+  //     stand();
+  //   // if (dScore > 21) {
+  //   //   // setIsDealerBusted(true)
+  //   //   // setWinner("player")
+  //   //   // setIsHandComplete(true)
+  //   // } if (dScore >= 17 && dScore < 22 && isDealersTurn) {
+  //   //   if (dScore > playerCount) {
+  //   //     // setWinner("dealer")
+  //   //     // setIsHandComplete(true)
+  //   //   } if (dScore < pScore && !isPlayerBusted) {
+  //   //     // setWinner("player")
+  //   //     // setIsHandComplete(true)
+  //   //   } if (dScore === pScore && !isPlayerBusted) {
+  //   //     // setWinner("push")
+  //   //     // setIsHandComplete(true)
+  //   //   }
+  //   // } if (dScore < 17 && isDealersTurn && !isPlayerBusted) {
+  //   //   // setTimeout(() => {
+  //   //   //   dealerHitAgain()
+  //   //   // }, 500);
+  //   // }
+  // }, [dScore, isStanded]);
 
   function addNewCard(isPlayer) {
     let index;
@@ -153,8 +153,13 @@ function App() {
     setDScore(cardAndScore.score);
     setIsStanded(true);
 
+    if (cardAndScore.score > 17) {
+      return;
+    }
+    stand();
+    console.log("stand again")
 
-    return cardAndScore.score;
+    // return cardAndScore.score;
   }
 
   function startGame() {
