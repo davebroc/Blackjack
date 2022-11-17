@@ -72,6 +72,7 @@ function App() {
   // const [dealerBJ, setDBJ] = React.useState(false);
   // const [isBustP, setBustP] = React.useState(false);
   // const [isBustD, setBustD] = React.useState(false);
+  const isInitialMount = React.useRef(true);
 
   function startGame() {
     let idx1;
@@ -94,23 +95,48 @@ function App() {
     setDHand([idx3, 52]);
     setDScore(cardData[idx3].value);
     setDScoreArray([cardData[idx3].value]);
+    isInitialMount.current = false;
   }
 
-  function getUnplayedIndex() {
-    let index;
-    do {
-      index = getRandIndex();
-    } while (playerHand.includes(index) || dealerHand.includes(index));
-    return index
+
+  function hit() {
+    const idx = getUnplayedIndex();
+    const handCopy = [...playerHand];
+    handCopy.push(idx);
+    setPHand(handCopy);
   }
 
   React.useEffect(() => {
-    setDScore(calculateScore("dealer"));
+    if (playerHand.length > 2 && !isInitialMount.current)
+      setPScoreArray([...pScoreArray, cardData[playerHand.at(-1)].value]);
+  }, [playerHand]);
+
+  React.useEffect(() => {
+    setPScore(calculateScore("player"));
+  }, [pScoreArray]);
+
+  React.useEffect(() => {
+    if (isStanded) {
+      const idx = getUnplayedIndex();
+      const handCopy = [...dealerHand];
+      handCopy.push(idx);
+      if (handCopy.includes(52))
+        handCopy.splice(handCopy.indexOf(52), 1);
+      setDHand(handCopy);
+    }
+  }, [isStanded]);
+
+  React.useEffect(() => {
+    // console.log(dealerHand);
+
+    // if (dealerHand.length > 2 && !isInitialMount.current)
+    setDScoreArray([...dScoreArray, cardData[dealerHand.at(-1)].value]);
   }, [dealerHand]);
 
   React.useEffect(() => {
-    console.log(dScore)
-  }, [dScore]);
+    setDScore(calculateScore("dealer"));
+    // console.log(dScoreArray);
+  }, [dScoreArray]);
 
 
   function calculateScore(person) {
@@ -127,6 +153,7 @@ function App() {
     let score = array.reduce((pv, cv) => pv + cv, 0);
 
     while (score > 21 && array.indexOf(11) !== -1) {
+      let firstEleven = array.indexOf(11);
       setFunc(array.map((c, i) => {
         if (i === firstEleven)
           return c = 1;
@@ -137,30 +164,18 @@ function App() {
     return score;
   }
 
-  function hit() {
-    const idx = getUnplayedIndex();
-    const handCopy = [...playerHand];
-    handCopy.push(idx);
-    setPHand(handCopy);
+
+
+
+
+
+  function getUnplayedIndex() {
+    let index;
+    do {
+      index = getRandIndex();
+    } while (playerHand.includes(index) || dealerHand.includes(index));
+    return index
   }
-
-  React.useEffect(() => {
-    setPScore(calculateScore("player"));
-  }, [playerHand]);
-
-
-  React.useEffect(() => {
-    if (isStanded) {
-      const idx = getUnplayedIndex();
-      const handCopy = [...dealerHand];
-      handCopy.push(idx);
-      if (handCopy.includes(52))
-        handCopy.splice(handCopy.indexOf(52), 1);
-      setDHand(handCopy);
-    }
-  }, [isStanded]);
-
-
 
   function getRandIndex() {
     return Math.floor(Math.random() * (cardData.length - 1));
@@ -171,11 +186,11 @@ function App() {
       <h1>Blackjack Game</h1>
 
       <div className="hand" id="dealerHand">
-        {dealerHand.map((c) => <Card card={cardData[c]} />)}
+        {dealerHand.map((c, i) => <Card key={i} card={cardData[c]} />)}
       </div>
       <p>House Score: {dScore}</p>
       <div className="hand" id="playerHand">
-        {playerHand.map((c) => <Card card={cardData[c]} />)}
+        {playerHand.map((c, i) => <Card key={i} card={cardData[c]} />)}
       </div>
       <button onClick={hit} disabled={pScore >= 21 || pScore <= 0 || dScore >= 21}>Hit</button>
       <button onClick={() => { setIsStanded(true) }} disabled={pScore >= 21 || pScore <= 0 || dScore >= 21}>Stand</button>
