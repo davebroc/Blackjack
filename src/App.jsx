@@ -65,7 +65,7 @@ function App() {
   const [dScoreArray, setDScoreArray] = React.useState([]);
   const [playerHand, setPHand] = React.useState([0, 13, 26, 39]);
   const [dealerHand, setDHand] = React.useState([52, 52]);
-  const [isStanded, setIsStanded] = React.useState(false);
+  const [dealerHit, setDealerHit] = React.useState(0);
   // const [playerWin, setPWin] = React.useState(false);
   // const [dealerWin, setDWin] = React.useState(false);
   // const [playerBJ, setPBJ] = React.useState(false);
@@ -78,7 +78,7 @@ function App() {
     let idx1;
     let idx2;
     let idx3;
-    setIsStanded(false);
+    setDealerHit(0);
     do {
       idx1 = getRandIndex();
       idx2 = getRandIndex();
@@ -116,7 +116,8 @@ function App() {
   }, [pScoreArray]);
 
   React.useEffect(() => {
-    if (isStanded) {
+    console.log(dealerHit)
+    if (dealerHit > 0 && !isInitialMount.current) {
       const idx = getUnplayedIndex();
       const handCopy = [...dealerHand];
       handCopy.push(idx);
@@ -124,20 +125,21 @@ function App() {
         handCopy.splice(handCopy.indexOf(52), 1);
       setDHand(handCopy);
     }
-  }, [isStanded]);
+  }, [dealerHit]);
 
   React.useEffect(() => {
-    // console.log(dealerHand);
-
-    // if (dealerHand.length > 2 && !isInitialMount.current)
     setDScoreArray([...dScoreArray, cardData[dealerHand.at(-1)].value]);
   }, [dealerHand]);
 
   React.useEffect(() => {
     setDScore(calculateScore("dealer"));
-    // console.log(dScoreArray);
   }, [dScoreArray]);
 
+  React.useEffect(() => {
+    if (dealerHit > 0 && dScore <= 17)
+      setTimeout(() => (setDealerHit(dealerHit + 1)), 1000)
+
+  }, [dScore]);
 
   function calculateScore(person) {
     let array;
@@ -193,7 +195,7 @@ function App() {
         {playerHand.map((c, i) => <Card key={i} card={cardData[c]} />)}
       </div>
       <button onClick={hit} disabled={pScore >= 21 || pScore <= 0 || dScore >= 21}>Hit</button>
-      <button onClick={() => { setIsStanded(true) }} disabled={pScore >= 21 || pScore <= 0 || dScore >= 21}>Stand</button>
+      <button onClick={() => { setDealerHit(1) }} disabled={pScore >= 21 || pScore <= 0 || dScore >= 21}>Stand</button>
       <p>Your Score: {pScore}</p>
       <button onClick={startGame} >Start Game</button>
       {pScore === 21 && <h1>Blackjack!</h1>}
