@@ -73,6 +73,7 @@ function App() {
   // const [isBustP, setBustP] = React.useState(false);
   // const [isBustD, setBustD] = React.useState(false);
   const [isGameStarted, setGameStarted] = React.useState(false);
+  const [isGameEnd, setGameEnd] = React.useState(false);
 
   function startGame() {
     let idx1;
@@ -96,6 +97,7 @@ function App() {
     setDScore(cardData[idx3].value);
     setDScoreArray([cardData[idx3].value]);
     setGameStarted(true);
+    setGameEnd(false);
   }
 
 
@@ -114,6 +116,25 @@ function App() {
   React.useEffect(() => {
     setPScore(calculateScore("player"));
   }, [pScoreArray]);
+
+
+  React.useEffect(() => {
+    if (pScore > 21)// player went bust
+      setGameEnd(true);
+  }, [pScore]);
+
+  function checkGameEnd() {
+    if (dealerHit > 21)// dealer went bust
+      setGameEnd(true);
+
+    if (dScore >= pScore)//dealer won
+      setGameEnd(true);
+    else //player won
+      setGameEnd(true);
+
+
+
+  }
 
   React.useEffect(() => {
     if (dealerHit > 0 && isGameStarted) {
@@ -137,6 +158,8 @@ function App() {
   React.useEffect(() => {
     if (dealerHit > 0 && dScore <= 17)
       setTimeout(() => (setDealerHit(dealerHit + 1)), 1000)
+    else
+      checkGameEnd();
 
   }, [dScore]);
 
@@ -184,7 +207,10 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Blackjack</h1>
+      <header className=''>
+        <h1>Blackjack</h1>
+        <button id='help'>?</button>
+      </header>
 
       <div className="hand" id="dealerHand">
         {dealerHand.map((c, i) => <Card key={i} card={cardData[c]} />)}
@@ -205,8 +231,8 @@ function App() {
 
 
       {!isGameStarted && <button onClick={startGame} >Start Game</button>}
-      {pScore === 21 && <h1>Blackjack!</h1>}
-      {pScore > 21 && <h1>You lost</h1>}
+      {/* {pScore === 21 && <h1>Blackjack!</h1>} */}
+      {/* {pScore > 21 && <h1>You lost</h1>} */}
     </div>
   );
 }

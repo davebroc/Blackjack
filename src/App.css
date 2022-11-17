@@ -16,6 +16,17 @@
 
 #playerHand {
   margin-top: 2rem;
+}
+
+header {
+  /* justify-content: flex-end; */
+}
+
+#help {
+  /* height: 2rem; */
+  position: absolute;
+  right: 1rem;
+  top: 1.7rem;
 
 }
 
@@ -30,5 +41,6 @@
 
 .flex {
   display: flex;
+  align-items: center;
   gap: 2rem;
 }
