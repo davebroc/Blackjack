@@ -66,8 +66,7 @@ function App() {
   const [playerHand, setPHand] = React.useState([0, 13, 26, 39]);
   const [dealerHand, setDHand] = React.useState([52, 52]);
   const [dealerHit, setDealerHit] = React.useState(0);
-  // const [playerWin, setPWin] = React.useState(false);
-  // const [dealerWin, setDWin] = React.useState(false);
+  const [winner, setWinner] = React.useState();
   // const [playerBJ, setPBJ] = React.useState(false);
   // const [dealerBJ, setDBJ] = React.useState(false);
   // const [isBustP, setBustP] = React.useState(false);
@@ -126,7 +125,7 @@ function App() {
 
   React.useEffect(() => {
     if (pScore > 21) {
-      setEndText("You Lost!");
+      setEndText("You Lost");
       setGameStarted(false);
     }// player went bust
   }, [pScore]);
@@ -138,14 +137,17 @@ function App() {
 
     if (dScore > 21) {// dealer went bust
       setEndText("You Won!")
+      setWinner("player")
       console.log("dealerHit > 21")
     }
     else if (dScore >= pScore) {//dealer won
-      setEndText("You Lost!");
+      setEndText("You Lost");
+      setWinner("dealer")
       console.log("dScore >= pScore")
     }
     else { //player won
       setEndText("You Won!")
+      setWinner("player")
       console.log("else")
     }
     setGameStarted(false);
@@ -248,8 +250,7 @@ function App() {
 
       <p>Your Score: {pScore}</p>
 
-
-      <h1>{endText}</h1>
+      <h1 className={winner == 'player' ? 'win' : 'loss'}>{endText}</h1>
       {/* {pScore > 21 && <h1>You lost</h1>} */}
     </div>
   );

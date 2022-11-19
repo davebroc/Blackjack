@@ -30,6 +30,14 @@ header {
 
 }
 
+/* .win {
+  background-color: green;
+} */
+
+.loss {
+  background-color: red;
+}
+
 .card {
   margin: 10px;
   /* margin-left: 0;
