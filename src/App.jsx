@@ -74,12 +74,14 @@ function App() {
   // const [isBustD, setBustD] = React.useState(false);
   const [isGameStarted, setGameStarted] = React.useState(false);
   const [isGameEnd, setGameEnd] = React.useState(false);
+  const [endText, setEndText] = React.useState("");
 
   function startGame() {
     let idx1;
     let idx2;
     let idx3;
     setDealerHit(0);
+    setEndText("");
     do {
       idx1 = getRandIndex();
       idx2 = getRandIndex();
@@ -117,22 +119,36 @@ function App() {
     setPScore(calculateScore("player"));
   }, [pScoreArray]);
 
+  React.useEffect(() => {
+    setGameEnd(true);
+
+  }, [endText]);
 
   React.useEffect(() => {
-    if (pScore > 21)// player went bust
-      setGameEnd(true);
+    if (pScore > 21) {
+      setEndText("You Lost!");
+    }// player went bust
   }, [pScore]);
 
   function checkGameEnd() {
-    if (dealerHit > 21)// dealer went bust
-      setGameEnd(true);
+    // console.log(isGameEnd)
+    // if (!isGameEnd)
+    //   return;
 
-    if (dScore >= pScore)//dealer won
-      setGameEnd(true);
-    else //player won
-      setGameEnd(true);
+    if (dScore > 21) {// dealer went bust
+      setEndText("You Won!")
+      console.log("dealerHit > 21")
+    }
+    if (dScore >= pScore) {//dealer won
+      setEndText("You Lost!");
+      console.log("dScore >= pScore")
 
+    }
+    else { //player won
+      setEndText("You Won!")
+      console.log("else")
 
+    }
 
   }
 
@@ -158,8 +174,9 @@ function App() {
   React.useEffect(() => {
     if (dealerHit > 0 && dScore <= 17)
       setTimeout(() => (setDealerHit(dealerHit + 1)), 1000)
-    else
+    else if (dScoreArray.length > 2) {
       checkGameEnd();
+    }
 
   }, [dScore]);
 
@@ -217,21 +234,21 @@ function App() {
       </div>
 
       <p>House Score: {dScore}</p>
+      {(!isGameStarted || isGameEnd) && <button onClick={startGame} >Start Game</button>}
 
       <div className="hand" id="playerHand">
         {playerHand.map((c, i) => <Card key={i} card={cardData[c]} />)}
       </div>
       <div className='flex'>
         <button onClick={hit} disabled={pScore >= 21 || pScore <= 0 || dealerHit > 0}>Hit</button>
-        <button onClick={() => { setDealerHit(1) }} disabled={pScore >= 21 || pScore <= 0 || dScore >= 21}>Stand</button>
+        <button onClick={() => { setDealerHit(1) }} disabled={pScore >= 21 || pScore <= 0 || dealerHit > 0}>Stand</button>
       </div>
 
 
       <p>Your Score: {pScore}</p>
 
 
-      {!isGameStarted && <button onClick={startGame} >Start Game</button>}
-      {/* {pScore === 21 && <h1>Blackjack!</h1>} */}
+      <h1>{endText}</h1>
       {/* {pScore > 21 && <h1>You lost</h1>} */}
     </div>
   );
