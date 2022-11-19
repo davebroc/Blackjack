@@ -239,7 +239,7 @@ function App() {
       <div className="hand" id="playerHand">
         {playerHand.map((c, i) => <Card key={i} card={cardData[c]} />)}
       </div>
-      <div className='flex'>
+      <div className='player-actions'>
         <button onClick={hit} disabled={pScore >= 21 || gameState === 'post' || pScore <= 0 || dealerHit > 0}>Hit</button>
         <button onClick={() => { setDealerHit(1) }} disabled={pScore > 21 || pScore <= 0 || dealerHit > 0}>Stand</button>
       </div>
