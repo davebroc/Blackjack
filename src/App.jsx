@@ -126,9 +126,14 @@ function App() {
   React.useEffect(() => {
     if (pScore > 21) {
       setEndText("You Lost");
-      setGameState("post");
+      setWinner("dealer")
+      // setGameState("post");
     }// player went bust
   }, [pScore]);
+
+  React.useEffect(() => {
+    setGameState("post");
+  }, [winner]);
 
   function checkGameEnd() {
 
@@ -137,19 +142,22 @@ function App() {
       setWinner("player")
       console.log("dealerHit > 21")
     }
-    else if (dScore >= pScore) {//dealer won
+    else if (dScore > pScore) {//dealer won
       setEndText("You Lost");
       setWinner("dealer")
-      console.log("dScore >= pScore")
+      console.log("dScore > pScore")
+    }
+    else if (dScore === pScore) {//dealer won
+      setEndText("Push");
+      setWinner("both")
+      console.log("dScore === pScore")
     }
     else { //player won
       setEndText("You Won!")
       setWinner("player")
       console.log("else")
     }
-    setGameState("post");
-
-
+    // console.log("else")
   }
 
   React.useEffect(() => {
@@ -245,7 +253,7 @@ function App() {
       </div>
 
       <p>Your Score: {pScore}</p>
-      {gameState === 'post' && <h1 className={winner}>{endText}</h1>}
+      {gameState === 'post' && <h2 className={winner}>{endText}</h2>}
       {(gameState !== 'during') && <button onClick={startGame} >Start Game</button>}
     </div>
   );
