@@ -5,6 +5,8 @@
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
+  min-width: 300px;
+  width: 100vw;
 }
 
 .hand {
@@ -19,23 +21,26 @@
 }
 
 header {
-  /* justify-content: flex-end; */
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
-#help {
-  /* height: 2rem; */
-  position: absolute;
-  right: 1rem;
-  top: 1.7rem;
+header>button {
+  height: 70%;
 
 }
+
 
 /* .win {
   background-color: green;
 } */
 
-.loss {
+.dealer {
+  /* loss */
   background-color: red;
+  padding: 0.5rem;
+  border-radius: 8px;
 }
 
 .card {

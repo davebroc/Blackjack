@@ -71,12 +71,12 @@ function App() {
   // const [dealerBJ, setDBJ] = React.useState(false);
   // const [isBustP, setBustP] = React.useState(false);
   // const [isBustD, setBustD] = React.useState(false);
-  const [isGameStarted, setGameStarted] = React.useState(false);
+  const [gameState, setGameState] = React.useState("pre");
   // const [isGameEnd, setGameEnd] = React.useState(false);
   const [endText, setEndText] = React.useState("");
 
   function startGame() {
-    setGameStarted(true);
+    setGameState("during");
     let idx1;
     let idx2;
     let idx3;
@@ -98,7 +98,7 @@ function App() {
     setDHand([idx3, 52]);
     setDScore(cardData[idx3].value);
     setDScoreArray([cardData[idx3].value]);
-    // setGameEnd(false);
+
   }
 
 
@@ -110,7 +110,7 @@ function App() {
   }
 
   React.useEffect(() => {
-    if (playerHand.length > 2 && isGameStarted)
+    if (playerHand.length > 2 && gameState === 'during')
       setPScoreArray([...pScoreArray, cardData[playerHand.at(-1)].value]);
   }, [playerHand]);
 
@@ -126,14 +126,11 @@ function App() {
   React.useEffect(() => {
     if (pScore > 21) {
       setEndText("You Lost");
-      setGameStarted(false);
+      setGameState("post");
     }// player went bust
   }, [pScore]);
 
   function checkGameEnd() {
-    // console.log(isGameEnd)
-    // if (!isGameEnd)
-    //   return;
 
     if (dScore > 21) {// dealer went bust
       setEndText("You Won!")
@@ -150,13 +147,13 @@ function App() {
       setWinner("player")
       console.log("else")
     }
-    setGameStarted(false);
+    setGameState("post");
 
 
   }
 
   React.useEffect(() => {
-    if (dealerHit > 0 && isGameStarted) {
+    if (dealerHit > 0 && gameState === 'during') {
       const idx = getUnplayedIndex();
       const handCopy = [...dealerHand];
       handCopy.push(idx);
@@ -227,7 +224,8 @@ function App() {
 
   return (
     <div className="App">
-      <header className=''>
+      <header >
+        <button id='settings'>⚙️</button>
         <h1>Blackjack</h1>
         <button id='help'>?</button>
       </header>
@@ -237,21 +235,18 @@ function App() {
       </div>
 
       <p>House Score: {dScore}</p>
-      {(!isGameStarted) && <button onClick={startGame} >Start Game</button>}
 
       <div className="hand" id="playerHand">
         {playerHand.map((c, i) => <Card key={i} card={cardData[c]} />)}
       </div>
       <div className='flex'>
-        <button onClick={hit} disabled={pScore >= 21 || !isGameStarted || pScore <= 0 || dealerHit > 0}>Hit</button>
+        <button onClick={hit} disabled={pScore >= 21 || gameState === 'post' || pScore <= 0 || dealerHit > 0}>Hit</button>
         <button onClick={() => { setDealerHit(1) }} disabled={pScore > 21 || pScore <= 0 || dealerHit > 0}>Stand</button>
       </div>
 
-
       <p>Your Score: {pScore}</p>
-
-      <h1 className={winner == 'player' ? 'win' : 'loss'}>{endText}</h1>
-      {/* {pScore > 21 && <h1>You lost</h1>} */}
+      {gameState === 'post' && <h1 className={winner}>{endText}</h1>}
+      {(gameState !== 'during') && <button onClick={startGame} >Start Game</button>}
     </div>
   );
 }
