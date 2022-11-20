@@ -66,7 +66,7 @@ function App() {
   const [playerHand, setPHand] = React.useState([0, 13, 26, 39]);
   const [dealerHand, setDHand] = React.useState([52, 52]);
   const [dealerHit, setDealerHit] = React.useState(0);
-  const [winner, setWinner] = React.useState();
+  const [winner, setWinner] = React.useState('');
   // const [playerBJ, setPBJ] = React.useState(false);
   // const [dealerBJ, setDBJ] = React.useState(false);
   // const [isBustP, setBustP] = React.useState(false);
@@ -118,46 +118,64 @@ function App() {
     setPScore(calculateScore("player"));
   }, [pScoreArray]);
 
-  React.useEffect(() => {
-    // setGameEnd(true);
-    // setGameStarted(false);
-  }, [endText]);
+  // React.useEffect(() => {
+
+  // }, [endText]);
 
   React.useEffect(() => {
     if (pScore > 21) {
-      setEndText("You Lost");
+      // setEndText("You Lost");
       setWinner("dealer")
-      // setGameState("post");
     }// player went bust
   }, [pScore]);
 
   React.useEffect(() => {
-    setGameState("post");
+    console.log(winner)
+
+    switch (winner) {
+      case "player":
+        setGameState("post");
+        setEndText("You Won!")
+
+        break;
+      case "dealer":
+        console.log("dealer won")
+        setEndText("You Lost");
+        setGameState("post");
+        break;
+      case "both":
+        setEndText("Push");
+        setGameState("post");
+        break;
+
+      default:
+        break;
+    }
   }, [winner]);
 
   function checkGameEnd() {
 
     if (dScore > 21) {// dealer went bust
-      setEndText("You Won!")
+      // setEndText("You Won!")
       setWinner("player")
-      console.log("dealerHit > 21")
+      console.log("dScore > 21")
     }
     else if (dScore > pScore) {//dealer won
-      setEndText("You Lost");
+      // setEndText("You Lost");
       setWinner("dealer")
       console.log("dScore > pScore")
     }
     else if (dScore === pScore) {//dealer won
-      setEndText("Push");
+      // setEndText("Push");
       setWinner("both")
       console.log("dScore === pScore")
     }
     else { //player won
-      setEndText("You Won!")
+      // setEndText("You Won!")
       setWinner("player")
       console.log("else")
     }
-    // console.log("else")
+
   }
 
   React.useEffect(() => {
@@ -180,7 +198,7 @@ function App() {
   }, [dScoreArray]);
 
   React.useEffect(() => {
-    if (dealerHit > 0 && dScore <= 17)
+    if (dealerHit > 0 && dScore < 17)
       setTimeout(() => (setDealerHit(dealerHit + 1)), 1000)
     else if (dScoreArray.length > 2) {
       checkGameEnd();
