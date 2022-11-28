@@ -67,12 +67,11 @@ function App() {
   const [dealerHand, setDHand] = React.useState([52, 52]);
   const [dealerHit, setDealerHit] = React.useState(0);
   const [winner, setWinner] = React.useState('');
-  // const [playerBJ, setPBJ] = React.useState(false);
-  // const [dealerBJ, setDBJ] = React.useState(false);
+  const [playerBJ, setPBJ] = React.useState(false);
+  const [dealerBJ, setDBJ] = React.useState(false);
   // const [isBustP, setBustP] = React.useState(false);
   // const [isBustD, setBustD] = React.useState(false);
   const [gameState, setGameState] = React.useState("pre");
-  // const [isGameEnd, setGameEnd] = React.useState(false);
   const [endText, setEndText] = React.useState("");
 
   function startGame() {
@@ -83,10 +82,15 @@ function App() {
     setDealerHit(0);
     setEndText("");
     setWinner('');
+    setPBJ(false)
+    setDBJ(false)
     do {
       idx1 = getRandIndex();
       idx2 = getRandIndex();
       idx3 = getRandIndex();
+      // idx1 = 2;
+      // idx2 = 12;
+      // idx3 = 26;
     } while (idx1 === idx2 || idx2 === idx3 || idx3 === idx1);
     if (cardData[idx1].value + cardData[idx2].value === 22) {//double aces case
       setPScore(12);
@@ -102,7 +106,6 @@ function App() {
 
   }
 
-
   function hit() {
     const idx = getUnplayedIndex();
     const handCopy = [...playerHand];
@@ -114,11 +117,42 @@ function App() {
     if (playerHand.length > 2 && gameState === 'during')
       setPScoreArray([...pScoreArray, cardData[playerHand.at(-1)].value]);
   }, [playerHand]);
+  React.useEffect(() => {
+    if (playerHand.length > 2 && gameState === 'during')
+      setPScoreArray([...pScoreArray, cardData[playerHand.at(-1)].value]);
+  }, [playerHand]);
 
   React.useEffect(() => {
     setPScore(calculateScore("player"));
+    if (pScoreArray.length === 2 && pScoreArray.includes(10) && pScoreArray.includes(11))//blackjack
+      setPBJ(true);
   }, [pScoreArray]);
 
+  React.useEffect(() => {
+    if (!playerBJ)
+      return
+    if (!dScoreArray.includes(10) && !dScoreArray.includes(11))
+      setWinner("player")
+
+
+
+  }, [playerBJ]);
+
+  React.useEffect(() => {
+    if (!dealerBJ)
+      return
+    if (dealerBJ && playerBJ)
+      setWinner("both")
+  }, [dealerBJ]);
+  React.useEffect(() => {
+    if (!playerBJ)
+      return
+    if (!dScoreArray.includes(10) && !dScoreArray.includes(11))
+      setWinner("player")
+
+
+
+  }, [playerBJ]);
 
   React.useEffect(() => {
     if (pScore > 21) {
@@ -127,22 +161,23 @@ function App() {
   }, [pScore]);
 
   React.useEffect(() => {
-    // console.log(winner)
-
+    let res = '';
+    // console.log(dealerBJ)
+    if (playerBJ || dealerBJ)
+      res = "Blackjack! "
     switch (winner) {
       case "player":
         setGameState("post");
-        setEndText("You Won!")
+        setEndText(res + "You Won!")
 
         break;
       case "dealer":
-        // console.log("dealer won")
         setGameState("post");
-        setEndText("You Lost");
+        setEndText(res + "You Lost");
         break;
       case "both":
         setGameState("post");
-        setEndText("Push");
+        setEndText(res + "Push");
         break;
 
       default:
@@ -151,24 +186,19 @@ function App() {
   }, [winner]);
 
   function checkGameEnd() {
-
     if (dScore > 21) {// dealer went bust
-      // setEndText("You Won!")
       setWinner("player")
       console.log("dScore > 21")
     }
     else if (dScore > pScore) {//dealer won
-      // setEndText("You Lost");
       setWinner("dealer")
       console.log("dScore > pScore")
     }
     else if (dScore === pScore) {//dealer won
-      // setEndText("Push");
       setWinner("both")
       console.log("dScore === pScore")
     }
     else { //player won
-      // setEndText("You Won!")
       setWinner("player")
       console.log("else")
     }
@@ -176,7 +206,7 @@ function App() {
   }
 
   React.useEffect(() => {
-    console.log(gameState)
+    // console.log(gameState)
     if (dealerHit > 0 && gameState === 'during') {
       const idx = getUnplayedIndex();
       const handCopy = [...dealerHand];
@@ -189,13 +219,18 @@ function App() {
 
   React.useEffect(() => {
     setDScoreArray([...dScoreArray, cardData[dealerHand.at(-1)].value]);
+
   }, [dealerHand]);
 
   React.useEffect(() => {
+    // console.log(dScoreArray)
+    if (dScoreArray.length === 3 && dScoreArray.includes(10) && dScoreArray.includes(11))//blackjack
+      setDBJ(true)
     setDScore(calculateScore("dealer"));
   }, [dScoreArray]);
 
   React.useEffect(() => {
+    // if (playerBJ && dScore)
     if (dealerHit > 0 && dScore < 17)
       setTimeout(() => (setDealerHit(dealerHit + 1)), 1000)
     else if (dScoreArray.length > 2) {
@@ -229,11 +264,6 @@ function App() {
     return score;
   }
 
-
-
-
-
-
   function getUnplayedIndex() {
     let index;
     do {
@@ -265,7 +295,8 @@ function App() {
       </div>
       <div className='player-actions'>
         <button onClick={hit} disabled={pScore >= 21 || gameState === 'post' || pScore <= 0 || dealerHit > 0}>Hit</button>
-        <button onClick={() => { setDealerHit(1) }} disabled={pScore > 21 || pScore <= 0 || dealerHit > 0}>Stand</button>
+        <button onClick={() => { setDealerHit(1) }} disabled={pScore > 21 || gameState === 'post' || pScore <= 0 || dealerHit > 0}>Stand</button>
+        {/* <button onClick={() => { setDealerHit(1) }} disabled={pScore > 21 || pScore <= 0 || dealerHit > 0}>Double Down</button> */}
       </div>
 
       <p>Your Score: {pScore}</p>
