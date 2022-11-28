@@ -82,6 +82,7 @@ function App() {
     let idx3;
     setDealerHit(0);
     setEndText("");
+    setWinner('');
     do {
       idx1 = getRandIndex();
       idx2 = getRandIndex();
@@ -118,19 +119,15 @@ function App() {
     setPScore(calculateScore("player"));
   }, [pScoreArray]);
 
-  // React.useEffect(() => {
-
-  // }, [endText]);
 
   React.useEffect(() => {
     if (pScore > 21) {
-      // setEndText("You Lost");
       setWinner("dealer")
     }// player went bust
   }, [pScore]);
 
   React.useEffect(() => {
-    console.log(winner)
+    // console.log(winner)
 
     switch (winner) {
       case "player":
@@ -139,13 +136,13 @@ function App() {
 
         break;
       case "dealer":
-        console.log("dealer won")
-        setEndText("You Lost");
+        // console.log("dealer won")
         setGameState("post");
+        setEndText("You Lost");
         break;
       case "both":
-        setEndText("Push");
         setGameState("post");
+        setEndText("Push");
         break;
 
       default:
@@ -179,6 +176,7 @@ function App() {
   }
 
   React.useEffect(() => {
+    console.log(gameState)
     if (dealerHit > 0 && gameState === 'during') {
       const idx = getUnplayedIndex();
       const handCopy = [...dealerHand];
