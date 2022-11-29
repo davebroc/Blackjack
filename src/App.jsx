@@ -90,7 +90,7 @@ function App() {
       idx3 = getRandIndex();
       // idx1 = 2;
       // idx2 = 12;
-      // idx3 = 26;
+      idx3 = 26;
     } while (idx1 === idx2 || idx2 === idx3 || idx3 === idx1);
     if (cardData[idx1].value + cardData[idx2].value === 22) {//double aces case
       setPScore(12);
@@ -133,9 +133,6 @@ function App() {
       return
     if (!dScoreArray.includes(10) && !dScoreArray.includes(11))
       setWinner("player")
-
-
-
   }, [playerBJ]);
 
   React.useEffect(() => {
@@ -144,15 +141,6 @@ function App() {
     if (dealerBJ && playerBJ)
       setWinner("both")
   }, [dealerBJ]);
-  React.useEffect(() => {
-    if (!playerBJ)
-      return
-    if (!dScoreArray.includes(10) && !dScoreArray.includes(11))
-      setWinner("player")
-
-
-
-  }, [playerBJ]);
 
   React.useEffect(() => {
     if (pScore > 21) {
@@ -162,7 +150,6 @@ function App() {
 
   React.useEffect(() => {
     let res = '';
-    // console.log(dealerBJ)
     if (playerBJ || dealerBJ)
       res = "Blackjack! "
     switch (winner) {
@@ -252,7 +239,7 @@ function App() {
     }
     let score = array.reduce((pv, cv) => pv + cv, 0);
 
-    while (score > 21 && array.indexOf(11) !== -1) {
+    if (score > 21 && array.indexOf(11) !== -1) {
       let firstEleven = array.indexOf(11);
       setFunc(array.map((c, i) => {
         if (i === firstEleven)
