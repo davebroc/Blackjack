@@ -90,7 +90,7 @@ function App() {
       idx3 = getRandIndex();
       // idx1 = 2;
       // idx2 = 12;
-      idx3 = 26;
+      // idx3 = 0;
     } while (idx1 === idx2 || idx2 === idx3 || idx3 === idx1);
     if (cardData[idx1].value + cardData[idx2].value === 22) {//double aces case
       setPScore(12);
@@ -191,11 +191,16 @@ function App() {
     }
 
   }
-
   React.useEffect(() => {
     // console.log(gameState)
     if (dealerHit > 0 && gameState === 'during') {
       const idx = getUnplayedIndex();
+      // let idx;
+      // if (dealerHit === 1)
+      //   idx = (dealerHit * 13);
+      // else
+      //   idx = (dealerHit * 13) - 3;
+
       const handCopy = [...dealerHand];
       handCopy.push(idx);
       if (handCopy.includes(52))
@@ -213,7 +218,12 @@ function App() {
     // console.log(dScoreArray)
     if (dScoreArray.length === 3 && dScoreArray.includes(10) && dScoreArray.includes(11))//blackjack
       setDBJ(true)
-    setDScore(calculateScore("dealer"));
+    let score = calculateScore("dealer");
+    if (score === dScore && score < 17 && dealerHit > 0)
+      setTimeout(() => (setDealerHit(dealerHit + 1)), 1000)
+    else
+      setDScore(score);
+
   }, [dScoreArray]);
 
   React.useEffect(() => {
