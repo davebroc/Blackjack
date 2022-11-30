@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import Card from './Card';
+import Settings from './Settings';
 
 const cardData = [
   { value: 11, img: './cards/ace_of_spades.svg' },
@@ -73,6 +74,10 @@ function App() {
   // const [isBustD, setBustD] = React.useState(false);
   const [gameState, setGameState] = React.useState("pre");
   const [endText, setEndText] = React.useState("");
+  const [popUp, setPopUp] = React.useState(false)
+  const duringPopUp = popUp ? " during-popup" : ""
+
+
 
   function startGame() {
     setGameState("during");
@@ -192,15 +197,8 @@ function App() {
 
   }
   React.useEffect(() => {
-    // console.log(gameState)
     if (dealerHit > 0 && gameState === 'during') {
       const idx = getUnplayedIndex();
-      // let idx;
-      // if (dealerHit === 1)
-      //   idx = (dealerHit * 13);
-      // else
-      //   idx = (dealerHit * 13) - 3;
-
       const handCopy = [...dealerHand];
       handCopy.push(idx);
       if (handCopy.includes(52))
@@ -215,7 +213,6 @@ function App() {
   }, [dealerHand]);
 
   React.useEffect(() => {
-    // console.log(dScoreArray)
     if (dScoreArray.length === 3 && dScoreArray.includes(10) && dScoreArray.includes(11))//blackjack
       setDBJ(true)
     let score = calculateScore("dealer");
@@ -227,13 +224,11 @@ function App() {
   }, [dScoreArray]);
 
   React.useEffect(() => {
-    // if (playerBJ && dScore)
     if (dealerHit > 0 && dScore < 17)
       setTimeout(() => (setDealerHit(dealerHit + 1)), 1000)
     else if (dScoreArray.length > 2) {
       checkGameEnd();
     }
-
   }, [dScore]);
 
   function calculateScore(person) {
@@ -273,14 +268,18 @@ function App() {
     return Math.floor(Math.random() * (cardData.length - 1));
   }
 
+  function settings() {
+    // console.log('hi')
+
+  }
+
   return (
     <div className="App">
       <header >
-        <button id='settings'>⚙️</button>
+        <button id='settingsButton' onClick={() => setPopUp(!popUp)}>⚙️</button>
         <h1>Blackjack</h1>
         <button id='help'>?</button>
       </header>
-
       <div className="hand" id="dealerHand">
         {dealerHand.map((c, i) => <Card key={i} card={cardData[c]} />)}
       </div>
@@ -299,7 +298,12 @@ function App() {
       <p>Your Score: {pScore}</p>
       {gameState === 'post' && <h2 className={winner}>{endText}</h2>}
       {(gameState !== 'during') && <button onClick={startGame} >Start Game</button>}
+
+      <div>
+        {popUp && <Settings setPopUp={setPopUp} />}
+      </div>
     </div>
+
   );
 }
 
