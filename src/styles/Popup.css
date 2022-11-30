@@ -44,14 +44,14 @@ ul {
 }
 
 .pu-content-container {
-    width: 100%;
+    width: 80%;
     display: flex;
     gap: 5px;
 }
 
 #settings-list {
     width: 100%;
-    margin-right: 2rem;
+    padding-left: 0px;
 }
 
 #settings-list li {

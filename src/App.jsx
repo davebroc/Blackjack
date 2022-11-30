@@ -1,7 +1,8 @@
 import React from 'react';
-import './App.css';
-import Card from './Card';
-import Settings from './Settings';
+import './styles/App.css';
+import Card from './components/Card';
+import Settings from './components/Settings';
+import Help from './components/Help'
 
 const cardData = [
   { value: 11, img: './cards/ace_of_spades.svg' },
@@ -74,8 +75,9 @@ function App() {
   // const [isBustD, setBustD] = React.useState(false);
   const [gameState, setGameState] = React.useState("pre");
   const [endText, setEndText] = React.useState("");
-  const [popUp, setPopUp] = React.useState(false)
-  const duringPopUp = popUp ? " during-popup" : ""
+  const [isSettingsPopUp, setSettingsPopUp] = React.useState(false)
+  const [isHelpPopUp, setHelpPopUp] = React.useState(false)
+  const duringPopUp = isSettingsPopUp ? " during-popup" : ""
 
 
 
@@ -276,9 +278,9 @@ function App() {
   return (
     <div className="App">
       <header >
-        <button id='settingsButton' onClick={() => setPopUp(!popUp)}>⚙️</button>
+        <button id='settingsButton' onClick={() => setSettingsPopUp(!isSettingsPopUp)}>⚙️</button>
         <h1>Blackjack</h1>
-        <button id='help'>?</button>
+        <button id='help' onClick={() => setHelpPopUp(!isHelpPopUp)}>?</button>
       </header>
       <div className="hand" id="dealerHand">
         {dealerHand.map((c, i) => <Card key={i} card={cardData[c]} />)}
@@ -300,7 +302,10 @@ function App() {
       {(gameState !== 'during') && <button onClick={startGame} >Start Game</button>}
 
       <div>
-        {popUp && <Settings setPopUp={setPopUp} />}
+        {isSettingsPopUp && <Settings setPopUp={setSettingsPopUp} />}
+      </div>
+      <div>
+        {isHelpPopUp && <Help setPopUp={setHelpPopUp} />}
       </div>
     </div>
 

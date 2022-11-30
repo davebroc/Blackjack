@@ -1,5 +1,5 @@
 import React from 'react'
-import './Popup.css';
+import '../styles/Popup.css';
 
 export default function Settings(props) {
     const { setPopUp } = props
@@ -10,14 +10,6 @@ export default function Settings(props) {
             <h2>Settings</h2>
             <div className="pu-content-container">
                 <ul id='settings-list'>
-                    {/* <li>
-                            <label>Surrender</label>
-                            <label className='switch'>
-                                <input type="checkbox" id='Surrender'></input>
-                                <span className="slider round"></span>
-                            </label>
-                        </li> */}
-
                     <li>
                         <label for="Surrender">Surrender</label>
                         <input type="checkbox" id="Surrender" ></input>
