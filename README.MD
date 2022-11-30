@@ -1,3 +1,8 @@
 Add optimol trainer.
-blackjack beats 21
-double aces game dosent end a a 10
+winning state over each hand and maybe darken background
+
+music
+animations
+betting
+
+cards fold over eachother?
