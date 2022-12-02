@@ -14,6 +14,7 @@ export default function EndBanner({ dealerState, playerState, winner, parent }) 
     switch (parent) {
         case "player":
             state = playerState;
+            parent = "you"
             break;
         case "dealer":
             state = dealerState;
@@ -24,7 +25,7 @@ export default function EndBanner({ dealerState, playerState, winner, parent }) 
 
     if (state === '') {
         if (didWin)
-            state = `${parent} Won`
+            state = `${parent} Won!`
         if (!didWin)
             state = `${parent} Lost`
     }
