@@ -6,3 +6,5 @@ animations
 betting
 
 cards fold over eachother?
+
+21 vs blackjack. Says push. Black jack should win?
