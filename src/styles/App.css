@@ -11,6 +11,7 @@
 
 .hand {
   display: flex;
+  position: relative;
   justify-content: center;
   width: 100vw;
   height: 20vh;

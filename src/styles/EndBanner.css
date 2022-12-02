@@ -1,0 +1,22 @@
+.winBanner {
+
+    background-color: blue;
+}
+
+.loseBanner {
+    background-color: red;
+}
+
+
+.banner {
+    padding: 0.2rem;
+    border-radius: 2rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    /* height: 20%; */
+    text-align: center;
+    z-index: 1;
+}

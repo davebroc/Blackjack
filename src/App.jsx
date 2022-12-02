@@ -3,6 +3,7 @@ import './styles/App.css';
 import Card from './components/Card';
 import Settings from './components/Settings';
 import Help from './components/Help'
+import EndBanner from './components/EndBanner'
 
 const cardData = [
   { value: 11, img: './cards/ace_of_spades.svg' },
@@ -68,16 +69,17 @@ function App() {
   const [playerHand, setPHand] = React.useState([0, 13, 26, 39]);
   const [dealerHand, setDHand] = React.useState([52, 52]);
   const [dealerHit, setDealerHit] = React.useState(0);
+
   const [winner, setWinner] = React.useState('');
-  const [playerBJ, setPBJ] = React.useState(false);
-  const [dealerBJ, setDBJ] = React.useState(false);
-  // const [isBustP, setBustP] = React.useState(false);
-  // const [isBustD, setBustD] = React.useState(false);
+  const [playerState, setPlayerState] = React.useState('');
+  const [dealerState, setDealerState] = React.useState('');
+
   const [gameState, setGameState] = React.useState("pre");
   const [endText, setEndText] = React.useState("");
+
   const [isSettingsPopUp, setSettingsPopUp] = React.useState(false)
   const [isHelpPopUp, setHelpPopUp] = React.useState(false)
-  const duringPopUp = isSettingsPopUp ? " during-popup" : ""
+  // const duringPopUp = isSettingsPopUp ? " during-popup" : ""
 
 
 
@@ -89,8 +91,10 @@ function App() {
     setDealerHit(0);
     setEndText("");
     setWinner('');
-    setPBJ(false)
-    setDBJ(false)
+    setPlayerState('')
+    setDealerState('')
+    // setPBJ(false)
+    // setDBJ(false)
     do {
       idx1 = getRandIndex();
       idx2 = getRandIndex();
@@ -132,46 +136,66 @@ function App() {
   React.useEffect(() => {
     setPScore(calculateScore("player"));
     if (pScoreArray.length === 2 && pScoreArray.includes(10) && pScoreArray.includes(11))//blackjack
-      setPBJ(true);
+      setPlayerState("blackjack");
   }, [pScoreArray]);
 
   React.useEffect(() => {
-    if (!playerBJ)
-      return
-    if (!dScoreArray.includes(10) && !dScoreArray.includes(11))
-      setWinner("player")
-  }, [playerBJ]);
+    switch (playerState) {
+      case "blackjack":
+        if (!dScoreArray.includes(10) && !dScoreArray.includes(11))
+          setWinner("player")
+        break;
+      case "bust":
+        setWinner("dealer")
+        break;
+
+      default:
+        break;
+    }
+
+  }, [playerState]);
 
   React.useEffect(() => {
-    if (!dealerBJ)
-      return
-    if (dealerBJ && playerBJ)
-      setWinner("both")
-  }, [dealerBJ]);
+    switch (dealerState) {
+      case "blackjack":
+        if (dealerState === "blackjack" && playerState === "blackjack")
+          setWinner("both")
+        else
+          setWinner("dealer")
+        break;
+      case "bust":
+        if (playerState !== "bust")//may not need to check
+          setWinner("player")
+        break;
+      default:
+        break;
+    }
+
+  }, [dealerState]);
 
   React.useEffect(() => {
     if (pScore > 21) {
-      setWinner("dealer")
+      // setWinner("dealer")
+      setPlayerState("bust");
     }// player went bust
   }, [pScore]);
 
   React.useEffect(() => {
-    let res = '';
-    if (playerBJ || dealerBJ)
-      res = "Blackjack! "
+    // let res = '';
+    // if (playerState === "blackjack" || dealerState === "blackjack")
+    //   res = "Blackjack! "
     switch (winner) {
       case "player":
         setGameState("post");
-        setEndText(res + "You Won!")
-
+        // setEndText(res + "You Won!")
         break;
       case "dealer":
         setGameState("post");
-        setEndText(res + "You Lost");
+        // setEndText(res + "You Lost");
         break;
       case "both":
         setGameState("post");
-        setEndText(res + "Push");
+        // setEndText(res + "Push");
         break;
 
       default:
@@ -180,10 +204,8 @@ function App() {
   }, [winner]);
 
   function checkGameEnd() {
-    if (dScore > 21) {// dealer went bust
-      setWinner("player")
-      console.log("dScore > 21")
-    }
+    if (dScore > 21) // dealer went bust
+      setDealerState("bust")
     else if (dScore > pScore) {//dealer won
       setWinner("dealer")
       console.log("dScore > pScore")
@@ -216,7 +238,7 @@ function App() {
 
   React.useEffect(() => {
     if (dScoreArray.length === 3 && dScoreArray.includes(10) && dScoreArray.includes(11))//blackjack
-      setDBJ(true)
+      setDealerState("blackjack")
     let score = calculateScore("dealer");
     if (score === dScore && score < 17 && dealerHit > 0)
       setTimeout(() => (setDealerHit(dealerHit + 1)), 1000)
@@ -270,10 +292,7 @@ function App() {
     return Math.floor(Math.random() * (cardData.length - 1));
   }
 
-  function settings() {
-    // console.log('hi')
 
-  }
 
   return (
     <div className="App">
@@ -282,24 +301,31 @@ function App() {
         <h1>Blackjack</h1>
         <button id='help' onClick={() => setHelpPopUp(!isHelpPopUp)}>?</button>
       </header>
+
       <div className="hand" id="dealerHand">
         {dealerHand.map((c, i) => <Card key={i} card={cardData[c]} />)}
+        {gameState === 'post' && <EndBanner parent="dealer" dealerState={dealerState} playerState={playerState} winner={winner} />}
       </div>
-
       <p>House Score: {dScore}</p>
+
 
       <div className="hand" id="playerHand">
         {playerHand.map((c, i) => <Card key={i} card={cardData[c]} />)}
+        {gameState === 'post' && <EndBanner parent="player" dealerState={dealerState} playerState={playerState} winner={winner} />}
       </div>
+
+
       <div className='player-actions'>
         <button onClick={hit} disabled={pScore >= 21 || gameState === 'post' || pScore <= 0 || dealerHit > 0}>Hit</button>
         <button onClick={() => { setDealerHit(1) }} disabled={pScore > 21 || gameState === 'post' || pScore <= 0 || dealerHit > 0}>Stand</button>
         {/* <button onClick={() => { setDealerHit(1) }} disabled={pScore > 21 || pScore <= 0 || dealerHit > 0}>Double Down</button> */}
       </div>
-
       <p>Your Score: {pScore}</p>
-      {gameState === 'post' && <h2 className={winner}>{endText}</h2>}
+
+
       {(gameState !== 'during') && <button onClick={startGame} >Start Game</button>}
+
+
 
       <div>
         {isSettingsPopUp && <Settings setPopUp={setSettingsPopUp} />}
