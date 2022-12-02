@@ -11,6 +11,8 @@ export default function EndBanner({ dealerState, playerState, winner, parent }) 
         winLose = 'winBanner'
     }
 
+
+
     switch (parent) {
         case "player":
             state = playerState;
@@ -31,6 +33,10 @@ export default function EndBanner({ dealerState, playerState, winner, parent }) 
     }
     state = capitalizeFirst(state);
 
+    if (winner === "both") {
+        winLose = "pushBanner"
+        state = "Push"
+    }
 
 
 
