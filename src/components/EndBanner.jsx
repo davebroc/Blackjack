@@ -31,9 +31,13 @@ export default function EndBanner({ dealerState, playerState, winner, parent }) 
         if (!didWin)
             state = `${parent} Lost`
     }
-    state = capitalizeFirst(state);
 
-    if (winner === "both") {
+    if (state === "blackjack")
+        winLose = 'winBanner'
+
+
+    if (winner === "both" && !(dealerState === "blackjack"
+        || playerState === "blackjack")) {
         winLose = "pushBanner"
         state = "Push"
     }
@@ -42,6 +46,7 @@ export default function EndBanner({ dealerState, playerState, winner, parent }) 
 
 
 
+    state = capitalizeFirst(state);
 
     function capitalizeFirst(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
